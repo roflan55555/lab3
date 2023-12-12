@@ -1,0 +1,156 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <conio.h>
+
+struct node
+{
+	char inf[256]; // полезная информация
+	struct node* next; // ссылка на следующий элемент 
+};
+
+char yes[5] = { 'y' };
+char no[5] = { 'n' };
+
+struct node* head = NULL, * last = NULL, * f = NULL; // указатели на первый и последний элементы списка
+
+void spstore(void), review(void), del(char* name);
+char find_el[1] = { '0' };
+
+struct node* find(char* name); // функция нахождения элемента
+struct node* get_struct(void); // функция создания элемента
+void main() {
+
+	setlocale(LC_ALL, "Russian");
+	printf("Введите данные\n");
+	head = get_struct();
+	last = head;
+	while (true) {
+		printf("Введите данные, если хотите окончить ввод введите *\n");
+		spstore();
+		if (f == NULL) {
+			break;
+		}
+
+	}
+
+	review();
+	printf("Удалить элемент? да - y  нет - n\n");
+	find_el[0] = _getch();
+	del(find_el);
+
+}
+void spstore(void)
+{
+	struct node* p = NULL;
+	p = get_struct();
+	if (p == NULL) {
+		f = NULL;
+	}
+	else {
+		p->next = last;
+		last = p;
+		head = last;
+	}
+	f = p;
+	return;
+}
+struct node* get_struct(void)
+{
+	struct node* p = NULL;
+	char s[256];
+
+	if ((p = (node*)malloc(sizeof(struct node))) == NULL)  // выделяем память под новый элемент списка
+	{
+		printf("Ошибка при распределении памяти\n");
+		exit(1);
+	}
+
+
+	scanf("%s", s);
+
+	if (strcmp(s, "*") == 0)
+	{
+		printf("Запись окончена\n");
+		return NULL;
+	}
+	strcpy(p->inf, s);
+
+	p->next = NULL;
+
+	return p;		// возвращаем указатель на созданный элемент
+}
+
+/* Просмотр содержимого списка. */
+void review(void)
+{
+	struct node* struc = head;
+	if (head == NULL)
+	{
+		printf("Список пуст\n");
+	}
+	while (struc)
+	{
+		printf("Имя - %s,\n", struc->inf);
+		struc = struc->next;
+	}
+	return;
+}
+struct node* find(char* name)
+{
+	struct node* struc = head;
+	if (head == NULL)
+	{
+		printf("Список пуст\n");
+	}
+	while (struc)
+	{
+		if (strcmp(name, struc->inf) == 0)
+		{
+			return struc;
+		}
+		struc = struc->next;
+	}
+	printf("Элемент не найден\n");
+	return NULL;
+}
+void del(char* name)
+{
+	struct node* struc = head; // указатель, проходящий по списку установлен на начало
+	struct node* prev = NULL;
+	int flag = 0; // индикатор отсутствия удаляемого элемента в списке
+	if (strcmp(name, yes) == 0) // если удаляемый элемент - первый
+	{
+		head = struc->next; // установливаем голову на следующий элемент
+		free(struc); // удаляем первый элемент
+		struc = head; // устанавливаем указатель для продолжения поиска
+		review();
+	}
+	if (strcmp(name, no) == 0) // если удаляемый элемент - первый
+	{
+		review();
+		return;
+	}
+yes:
+	printf("Удалить элемент? да - y  нет - n\n");
+	*name = _getch();
+	while (struc != 0) {
+		if (strcmp(name, yes) == 0) {
+			head = struc->next;
+			free(struc);
+			struc = head;
+			review();
+			if (struc != 0) goto yes;
+
+		}
+
+		if (strcmp(name, no) == 0) {
+			review();
+			return;
+		}
+
+	}
+}
